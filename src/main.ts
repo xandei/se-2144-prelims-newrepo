@@ -58,6 +58,12 @@ function handleOperatorInput(op: string) {
         if (operator) {
             calculateResult(); // calculate result if there's already an operator
         }
+
+        // Prevent adding an operator if the previous input ends with a decimal
+        if (previousInput.endsWith('.') || currentInput.endsWith('.')) {
+            return; // Do nothing if the previous input ends with a decimal
+        }
+
         previousInput += currentInput + ' '; // store the current input
         currentInput = ''; // clear current input
         operator = op; // set the operator
@@ -85,11 +91,18 @@ function handleClear() {
 
 function handleBackspace() {
     if (!isOff) {
-        currentInput = currentInput.slice(0, -1); // remove the last character from current input
-        if (currentInput === '') {
-            currentInput = ''; // reset to empty if input is empty
+        if (currentInput) {
+            // If there's current input, backspace normally
+            currentInput = currentInput.slice(0, -1);
+        } else if (operator) {
+            // If there's an operator but no current input, remove the operator
+            operator = '';
+            previousInput = previousInput.slice(0, -1); // Remove the space after the operator
+        } else if (previousInput) {
+            // If there's previous input, remove the last character from previous input
+            previousInput = previousInput.slice(0, -1);
         }
-        updateDisplay(); // Update the display
+        updateDisplay();
     }
 }
 
